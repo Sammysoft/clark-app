@@ -44,7 +44,7 @@ const LoginPage = () => {
 
   const leftSide = (
     <div
-      className=""
+      className="banner"
       style={{
         backgroundColor:"#1ea8e7",
         width: "100%",
@@ -88,7 +88,7 @@ const LoginPage = () => {
 
   const rightSide = (
     <div
-      className="sw-lg-70 min-h-100 bg-foreground d-flex justify-content-center align-items-center shadow-deep py-5 full-page-content-right-border"
+      className="sw-lg-70 min-h-100 bg-foreground d-flex justify-content-center align-items-center shadow-deep py-5 full-page-content-right-border long"
       style={{ height: "100vh" }}
     >
       <div className="sw-lg-50 px-5">

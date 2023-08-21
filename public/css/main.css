@@ -1,1 +1,13 @@
 /* This file is reserved for overriding and extending the template styles. */
+
+.banner{
+    display: block;
+}
+@media (max-width: 1080px) {
+    .banner{
+        display: none !important;
+    }
+    .long{
+        width: 100vw !important;
+    }
+}
