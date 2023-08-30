@@ -20,15 +20,11 @@ const OnboardPage = () => {
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
-    email: Yup.string()
-      .email()
-      .required("Email is required"),
+    email: Yup.string().email().required("Email is required"),
     password: Yup.string()
       .min(6, "Must be at least 6 chars!")
       .required("Password is required"),
-    terms: Yup.bool()
-      .required()
-      .oneOf([true], "Terms must be accepted"),
+    terms: Yup.bool().required().oneOf([true], "Terms must be accepted"),
   });
   const initialValues = { name: "", email: "", password: "", terms: false };
   const onSubmit = (values) => {
@@ -52,6 +48,7 @@ const OnboardPage = () => {
 
   const leftSide = (
     <div
+      className="banner"
       style={{
         backgroundColor: "#1ea8e7",
         width: "100%",
@@ -95,7 +92,7 @@ const OnboardPage = () => {
 
   const rightSide = (
     <div
-      className="sw-lg-70 min-h-100 bg-foreground d-flex justify-content-center align-items-center shadow-deep py-5 full-page-content-right-border"
+      className="sw-lg-70 min-h-100 bg-foreground d-flex justify-content-center align-items-center shadow-deep py-5 full-page-content-right-border long"
       style={{ height: "100vh" }}
     >
       <div className="sw-lg-50 px-5">

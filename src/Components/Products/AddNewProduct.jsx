@@ -1,5 +1,9 @@
 /* eslint-disable */
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useState, useContext } from "react";
+import { API } from "../../string";
+import { AuthContext } from "../../Context/AuthContext";
+import { toast } from "react-hot-toast";
 
 const AddNewProduct = ({ route, setRoute }) => {
   const [name, setName] = useState("");
@@ -8,6 +12,33 @@ const AddNewProduct = ({ route, setRoute }) => {
   const [includedPrice, setIncludedPrice] = useState(0);
   const [excludedPrice, setEcludedPrice] = useState(0);
   const [category, setCategory] = useState("");
+
+  const token = localStorage.getItem("clarktoken");
+
+  const addProduct = () => {
+    const payload = {
+      name,
+      title,
+      description,
+      includedPrice,
+      excludedPrice,
+      category,
+    };
+
+    axios
+      .post(`${API}/product/add`, payload, {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        toast.success(res.data.data);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
+  };
 
   return (
     <>
@@ -42,6 +73,9 @@ const AddNewProduct = ({ route, setRoute }) => {
               <div class="w-100 d-md-none"></div>
               <div class="col-auto d-flex align-items-end justify-content-end">
                 <button
+                  onClick={() => {
+                    addProduct();
+                  }}
                   type="button"
                   class="btn btn-outline-primary btn-icon btn-icon-only"
                   data-delay='{"show":"500", "hide":"0"}'
