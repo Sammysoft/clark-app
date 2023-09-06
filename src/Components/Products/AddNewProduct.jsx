@@ -1,28 +1,46 @@
 /* eslint-disable */
 import axios from "axios";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import { API } from "../../string";
-import { AuthContext } from "../../Context/AuthContext";
+import { storage } from "../../firebase";
 import { toast } from "react-hot-toast";
 
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  getStorage,
+} from "firebase/storage";
+
+import { v4 } from "uuid";
+
 const AddNewProduct = ({ route, setRoute }) => {
-  const [name, setName] = useState("");
+  const [status, setUploadStatus] = useState("Upload product photos");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [details, setDetails] = useState("");
   const [includedPrice, setIncludedPrice] = useState(0);
-  const [excludedPrice, setEcludedPrice] = useState(0);
+  const [excludedPrice, setExcludedPrice] = useState(0);
   const [category, setCategory] = useState("");
+
+  const [picture, setPicture] = useState([]);
+  const [pickFile, setPickFile] = useState(null);
+  const [loading, setLoading] = useState(Boolean);
+  const [imageLoad, setImageLoad] = useState("");
+  const [opacity, setOpacity] = useState(false);
+  const [item_pictures, setItemPictures] = useState([]);
 
   const token = localStorage.getItem("clarktoken");
 
   const addProduct = () => {
     const payload = {
-      name,
+      details,
       title,
       description,
-      includedPrice,
-      excludedPrice,
+      taxIncludedPrice: includedPrice,
+      taxExcludedPrice: excludedPrice,
       category,
+      product_gallery: item_pictures,
     };
 
     axios
@@ -38,6 +56,72 @@ const AddNewProduct = ({ route, setRoute }) => {
       .catch((error) => {
         toast.error(error.response.data.message);
       });
+  };
+
+  const pick = useRef("");
+
+  const uploadFile = (file) => {
+    setImageLoad(true);
+    if (picture == null) {
+      return null;
+    } else {
+      setOpacity(true);
+      file.map((image) => {
+        const imageRef = ref(
+          getStorage(),
+          `images/clark-app-${Math.random + v4()}`
+        );
+        let promise = [];
+        const uploadTask = uploadBytesResumable(imageRef, image);
+        promise.push(uploadTask);
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setUploadStatus(`${Math.round(progress)}%`);
+            switch (snapshot.state) {
+              case "paused":
+                setUploadStatus("Paused");
+                break;
+              case "running":
+                break;
+            }
+          },
+          (error) => {
+            alert(
+              "Sorry, upload denied at the moment, Please try again later!"
+            );
+          },
+          async () => {
+            await getDownloadURL(uploadTask.snapshot.ref).then(
+              (downloadURL) => {
+                console.log(downloadURL);
+                setItemPictures((prevImages) => prevImages.concat(downloadURL));
+                setOpacity(false);
+              }
+            );
+          }
+        );
+        Promise.all(promise).then(() => {
+          setImageLoad(false);
+          toast.success("Images uploaded successfully");
+        });
+      });
+    }
+  };
+
+  const handlePictureChange = (e) => {
+    const fileArray = Array.from(e.target.files).map((file) =>
+      URL.createObjectURL(file)
+    );
+    const uploadableFile = Array.from(e.target.files).map((files) => files);
+    if (fileArray.length > 0) {
+      setPicture((prevImages) => prevImages.concat(fileArray));
+      uploadFile(uploadableFile);
+    } else {
+      toast.error("Please pick more than one Image");
+    }
   };
 
   return (
@@ -76,7 +160,7 @@ const AddNewProduct = ({ route, setRoute }) => {
                   onClick={() => {
                     addProduct();
                   }}
-                  type="button"
+                  type="submit"
                   class="btn btn-outline-primary btn-icon btn-icon-only"
                   data-delay='{"show":"500", "hide":"0"}'
                   data-bs-toggle="tooltip"
@@ -142,13 +226,18 @@ const AddNewProduct = ({ route, setRoute }) => {
                       </div>
                       <div class="mb-3 w-100">
                         <label class="form-label">Category</label>
-                        <select class="select-single-no-search">
+                        <select
+                          value={category}
+                          onChange={(e) => {
+                            setCategory(e.target.value);
+                            console.log(category);
+                          }}
+                          className="form-control"
+                        >
                           <option label="&nbsp;"></option>
-                          <option value="Breadstick">Electronics</option>
-                          <option value="Biscotti">Automobile</option>
-                          <option value="Fougasse" selected>
-                            Phones
-                          </option>
+                          <option value="Electronics">Electronics</option>
+                          <option value="Automobile">Automobile</option>
+                          <option value="Phones">Phones</option>
                         </select>
                       </div>
                       <div class="mb-3">
@@ -158,9 +247,14 @@ const AddNewProduct = ({ route, setRoute }) => {
                           id="quillEditorBubble"
                         >
                           <input
-                            id="quillEditorBubble"
                             type="text"
                             style={{ height: "100%", width: "100%" }}
+                            value={description}
+                            onChange={(e) => {
+                              setDescription(e.target.value);
+                            }}
+                            id="quillEditorBubble"
+                            // class="html-editor-bubble html-editor sh-13"
                           />
                         </div>
                       </div>
@@ -170,18 +264,16 @@ const AddNewProduct = ({ route, setRoute }) => {
                           class="html-editor-bubble html-editor sh-25"
                           id="quillEditorDetails"
                         >
-                          <h6></h6>
-                          <p></p>
-                          <p>
-                            <br />
-                          </p>
-                          <h6></h6>
-                          <p></p>
-                          <p>
-                            <br />
-                          </p>
-                          <h6></h6>
-                          <p></p>
+                          <input
+                            type="text"
+                            style={{ height: "100%", width: "100%" }}
+                            value={details}
+                            onChange={(e) => {
+                              setDetails(e.target.value);
+                            }}
+                            // class="html-editor-bubble html-editor sh-13"
+                            id="quillEditorBubble"
+                          />
                         </div>
                       </div>
                     </form>
@@ -321,12 +413,12 @@ const AddNewProduct = ({ route, setRoute }) => {
               {/* <!-- Shipping End -->
 
               <!-- Attributes Start --> */}
-              <div class="mb-5">
+              {/* <div class="mb-5">
                 <h2 class="small-title">Attributes</h2>
                 <div class="card">
                   <div class="card-body">
                     <div class="mb-n6 border-last-none">
-                      {/* <div class="mb-3 pb-3 border-bottom border-separator-light">
+                      <div class="mb-3 pb-3 border-bottom border-separator-light">
                         <div class="row gx-2">
                           <div class="col col-md-auto order-1">
                             <div class="mb-3">
@@ -356,7 +448,7 @@ const AddNewProduct = ({ route, setRoute }) => {
                             </button>
                           </div>
                         </div>
-                      </div> */}
+                      </div>
                       <div class="mb-3 pb-3 border-bottom border-separator-light">
                         <div class="row gx-2">
                           <div class="col col-md-auto order-1">
@@ -397,7 +489,7 @@ const AddNewProduct = ({ route, setRoute }) => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
               {/* <!-- Attributes End --> */}
             </div>
 
@@ -412,16 +504,22 @@ const AddNewProduct = ({ route, setRoute }) => {
                         <label class="form-label">Tax Excluded</label>
                         <input
                           type="text"
-                          class="form-control mask-currency"
-                          value=""
+                          class="form-control"
+                          value={excludedPrice}
+                          onChange={(e) => {
+                            setExcludedPrice(e.target.value);
+                          }}
                         />
                       </div>
                       <div class="mb-0">
                         <label class="form-label">Tax Included</label>
                         <input
                           type="text"
-                          class="form-control mask-currency"
-                          value=""
+                          class="form-control"
+                          value={includedPrice}
+                          onChange={(e) => {
+                            setIncludedPrice(e.target.value);
+                          }}
                         />
                       </div>
                     </form>
@@ -453,7 +551,7 @@ const AddNewProduct = ({ route, setRoute }) => {
               {/* <!-- History End -->
 
               <!-- Image Start --> */}
-              <div class="mb-5">
+              {/* <div class="mb-5">
                 <h2 class="small-title">Image</h2>
                 <div class="card">
                   <div class="card-body">
@@ -465,7 +563,7 @@ const AddNewProduct = ({ route, setRoute }) => {
                     </form>
                   </div>
                 </div>
-              </div>
+              </div> */}
               {/* <!-- Image End -->
 
               <!-- Gallery Start --> */}
@@ -473,17 +571,45 @@ const AddNewProduct = ({ route, setRoute }) => {
                 <h2 class="small-title">Gallery</h2>
                 <div class="card">
                   <div class="card-body">
-                    <form class="mb-3">
-                      {/* <div
+                    {/* <form class="mb-3">
+                      <div
                         class="dropzone dropzone-columns row g-2 row-cols-1 row-cols-md-4 row-cols-xl-2 border-0 p-0"
-                        id="dropzoneProductGallery"
-                      ></div> */}
-                    </form>
+                        // id="dropzoneProductGallery"
+                      >
+
+                      </div>
+                    </form> */}
+                    {/* <img src={""} width={"100px"} height={"100px"} /> */}
+                    <div className="imageGalleryWrapper">
+                      {item_pictures.map((data, index) => (
+                        <img
+                          className="imageGallery"
+                          key={index}
+                          src={data}
+                          height={"100px"}
+                          width={"100px"}
+                        />
+                      ))}
+                    </div>
+                    <input
+                      onChange={(e) => {
+                        handlePictureChange(e);
+                        setPickFile(e.target.files);
+                      }}
+                      ref={pick}
+                      style={{ display: "none" }}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                    />
                     <div class="text-center">
                       <button
                         type="button"
                         class="btn btn-foreground hover-outline btn-icon btn-icon-start mt-2"
                         id="dropzoneProductGalleryButton"
+                        onClick={() => {
+                          pick.current.click();
+                        }}
                       >
                         <i data-acorn-icon="plus"></i>
                         <span>Add Files</span>

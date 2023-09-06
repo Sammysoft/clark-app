@@ -259,7 +259,7 @@ const ProductList = ({ route, setRoute }) => {
 
                 {/* <!-- Items Container Start --> */}
 
-                <div class="card mb-2">
+                {/* <div class="card mb-2">
                   <div class="row g-0 h-100 sh-lg-9 position-relative">
                     <a
                       href="Products.Detail.html"
@@ -354,7 +354,7 @@ const ProductList = ({ route, setRoute }) => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 {/* <div class="card mb-2">
                   <div class="row g-0 h-100 sh-lg-9 position-relative">
                     <a
