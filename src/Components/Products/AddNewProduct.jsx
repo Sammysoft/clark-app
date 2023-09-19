@@ -13,8 +13,10 @@ import {
 } from "firebase/storage";
 
 import { v4 } from "uuid";
+import { AuthContext } from "../../Context/AuthContext";
 
 const AddNewProduct = ({ route, setRoute }) => {
+  const {_getUser} = useContext(AuthContext)
   const [status, setUploadStatus] = useState("Upload product photos");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -41,7 +43,8 @@ const AddNewProduct = ({ route, setRoute }) => {
       taxExcludedPrice: excludedPrice,
       category,
       product_gallery: item_pictures,
-    };
+      userID: _getUser?.id
+     };
 
     axios
       .post(`${API}/product/add`, payload, {
@@ -50,8 +53,8 @@ const AddNewProduct = ({ route, setRoute }) => {
         },
       })
       .then((res) => {
-        console.log(res.data);
-        toast.success(res.data.data);
+        console.log(res.data.message);
+        toast.success(res.data.message);
       })
       .catch((error) => {
         toast.error(error.response.data.message);
@@ -244,7 +247,7 @@ const AddNewProduct = ({ route, setRoute }) => {
                         <label class="form-label">Description</label>
                         <div
                           class="html-editor-bubble html-editor sh-13"
-                          id="quillEditorBubble"
+                          // id="quillEditorBubble"
                         >
                           <input
                             type="text"
@@ -254,7 +257,7 @@ const AddNewProduct = ({ route, setRoute }) => {
                               setDescription(e.target.value);
                             }}
                             id="quillEditorBubble"
-                            // class="html-editor-bubble html-editor sh-13"
+                            class="html-editor-bubble html-editor sh-13"
                           />
                         </div>
                       </div>
@@ -262,7 +265,7 @@ const AddNewProduct = ({ route, setRoute }) => {
                         <label class="form-label">Details</label>
                         <div
                           class="html-editor-bubble html-editor sh-25"
-                          id="quillEditorDetails"
+                          // id="quillEditorDetails"
                         >
                           <input
                             type="text"
@@ -271,6 +274,7 @@ const AddNewProduct = ({ route, setRoute }) => {
                             onChange={(e) => {
                               setDetails(e.target.value);
                             }}
+                            class="html-editor-bubble html-editor sh-25"
                             // class="html-editor-bubble html-editor sh-13"
                             id="quillEditorBubble"
                           />

@@ -1,8 +1,10 @@
 /* eslint-disable */
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router";
+import { AuthContext } from "../../Context/AuthContext";
 
 const ProductList = ({ route, setRoute }) => {
+  const { _getUser } = useContext(AuthContext);
   const navigate = useNavigate();
   return (
     <>
@@ -188,19 +190,19 @@ const ProductList = ({ route, setRoute }) => {
                       data-bs-delay="0"
                       title="Item Count"
                     >
-                      10 Items
+                    Items
                     </span>
                   </button>
                   <div class="dropdown-menu shadow dropdown-menu-end">
-                    <a class="dropdown-item" href="#">
+                    {/* <a class="dropdown-item" href="#">
                       5 Items
-                    </a>
+                    </a> */}
                     <a class="dropdown-item active" href="#">
-                      10 Items
+                      {_getUser?.products?.length} Items
                     </a>
-                    <a class="dropdown-item" href="#">
+                    {/* <a class="dropdown-item" href="#">
                       20 Items
-                    </a>
+                    </a> */}
                   </div>
                 </div>
                 {/* <!-- Length End --> */}
@@ -259,102 +261,56 @@ const ProductList = ({ route, setRoute }) => {
 
                 {/* <!-- Items Container Start --> */}
 
-                {/* <div class="card mb-2">
-                  <div class="row g-0 h-100 sh-lg-9 position-relative">
-                    <a
-                      href="Products.Detail.html"
-                      class="col-auto position-relative"
-                    >
-                      <img
-                        src="img/product/small/product-1.webp"
-                        alt="product"
-                        class="card-img card-img-horizontal sw-11 h-100"
-                      />
-                    </a>
-                    <div class="col py-4 py-lg-0">
-                      <div class="ps-5 pe-4 h-100">
-                        <div class="row g-0 h-100 align-content-center">
-                          <a
-                            href="Products.Detail.html"
-                            class="col-11 col-lg-4 d-flex flex-column mb-lg-0 mb-3 pe-3 d-flex order-1 h-lg-100 justify-content-center"
-                          >
-                            Wooden Animal Toys
-                            <div class="text-small text-muted text-truncate position">
-                              #2342
+                {_getUser?.products?.map((product, id) => (
+                  <div class="card mb-2" key={id}>
+                    <div class="row g-0 h-100 sh-lg-9 position-relative">
+                      <a
+                        href="Products.Detail.html"
+                        class="col-auto position-relative"
+                      >
+                        <img
+                          src={product.product_gallery[0]}
+                          alt="product"
+                          class="card-img card-img-horizontal sw-11 h-100"
+                        />
+                      </a>
+                      <div class="col py-4 py-lg-0">
+                        <div class="ps-5 pe-4 h-100">
+                          <div class="row g-0 h-100 align-content-center">
+                            <a
+                              href="Products.Detail.html"
+                              class="col-11 col-lg-4 d-flex flex-column mb-lg-0 mb-3 pe-3 d-flex order-1 h-lg-100 justify-content-center"
+                            >
+                              {product?.title}
+                              <div class="text-small text-muted text-truncate position">
+                                {product?.description}
+                              </div>
+                            </a>
+                            <div class="col-12 col-lg-2 d-flex flex-column pe-1 mb-2 mb-lg-0 justify-content-center order-3">
+                              <div class="lh-1 text-alternate">${product?.taxIncludedPrice}</div>
                             </div>
-                          </a>
-                          <div class="col-12 col-lg-2 d-flex flex-column pe-1 mb-2 mb-lg-0 justify-content-center order-3">
-                            <div class="lh-1 text-alternate">2.511</div>
-                          </div>
-                          <div class="col-12 col-lg-3 d-flex flex-column pe-1 mb-2 mb-lg-0 justify-content-center order-4">
-                            <div class="lh-1 text-alternate">$ 62.20</div>
-                          </div>
-                          <div class="col-12 col-lg-2 d-flex flex-column pe-1 mb-2 mb-lg-0 align-items-start justify-content-center order-5">
-                            <span class="badge bg-outline-primary group">
-                              SALE
-                            </span>
-                          </div>
-                          <div class="col-1 d-flex flex-column mb-2 mb-lg-0 align-items-end order-2 order-lg-last justify-content-lg-center">
-                            <label class="form-check mt-2">
-                              <input
-                                type="checkbox"
-                                class="form-check-input pe-none"
-                              />
-                            </label>
+                            <div class="col-12 col-lg-3 d-flex flex-column pe-1 mb-2 mb-lg-0 justify-content-center order-4">
+                              <div class="lh-1 text-alternate">${product?.taxExcludedPrice}</div>
+                            </div>
+                            <div class="col-12 col-lg-2 d-flex flex-column pe-1 mb-2 mb-lg-0 align-items-start justify-content-center order-5">
+                              <span class="badge bg-outline-primary group">
+                                SALE
+                              </span>
+                            </div>
+                            <div class="col-1 d-flex flex-column mb-2 mb-lg-0 align-items-end order-2 order-lg-last justify-content-lg-center">
+                              <label class="form-check mt-2">
+                                <input
+                                  type="checkbox"
+                                  class="form-check-input pe-none"
+                                />
+                              </label>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="card mb-2">
-                  <div class="row g-0 h-100 sh-lg-9 position-relative">
-                    <a
-                      href="Products.Detail.html"
-                      class="col-auto position-relative"
-                    >
-                      <img
-                        src="img/product/small/product-2.webp"
-                        alt="product"
-                        class="card-img card-img-horizontal sw-11 h-100"
-                      />
-                    </a>
-                    <div class="col py-4 py-lg-0">
-                      <div class="ps-5 pe-4 h-100">
-                        <div class="row g-0 h-100 align-content-center">
-                          <a
-                            href="Products.Detail.html"
-                            class="col-11 col-lg-4 d-flex flex-column mb-lg-0 mb-3 pe-3 d-flex order-1 h-lg-100 justify-content-center"
-                          >
-                            Aromatic Green Candle
-                            <div class="text-small text-muted text-truncate position">
-                              #2567
-                            </div>
-                          </a>
-                          <div class="col-12 col-lg-2 d-flex flex-column pe-1 mb-2 mb-lg-0 justify-content-center order-3">
-                            <div class="lh-1 text-alternate">352</div>
-                          </div>
-                          <div class="col-12 col-lg-3 d-flex flex-column pe-1 mb-2 mb-lg-0 justify-content-center order-4">
-                            <div class="lh-1 text-alternate">$ 41.15</div>
-                          </div>
-                          <div class="col-12 col-lg-2 d-flex flex-column pe-1 mb-2 mb-lg-0 align-items-start justify-content-center order-5">
-                            <span class="badge bg-outline-primary group">
-                              SALE
-                            </span>
-                          </div>
-                          <div class="col-1 d-flex flex-column mb-2 mb-lg-0 align-items-end order-2 order-lg-last justify-content-lg-center">
-                            <label class="form-check mt-2">
-                              <input
-                                type="checkbox"
-                                class="form-check-input pe-none"
-                              />
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
+                ))}
                 {/* <div class="card mb-2">
                   <div class="row g-0 h-100 sh-lg-9 position-relative">
                     <a
@@ -725,7 +681,7 @@ const ProductList = ({ route, setRoute }) => {
               </div>
             </div>
             {/* <!-- Items Pagination Start --> */}
-            <div class="w-100 d-flex justify-content-center">
+            {/* <div class="w-100 d-flex justify-content-center">
               <nav>
                 <ul class="pagination">
                   <li class="page-item disabled">
@@ -760,7 +716,7 @@ const ProductList = ({ route, setRoute }) => {
                   </li>
                 </ul>
               </nav>
-            </div>
+            </div> */}
             {/* // <!-- Items Pagination End --> */}
           </div>
         </div>
