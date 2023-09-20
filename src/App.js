@@ -5,8 +5,6 @@ import DashboardPage from "./Pages/DashboardPage";
 import LoginPage from "./Pages/Authentication/Login";
 import OnboardPage from "./Pages/Authentication/Onboard";
 import { AuthContext } from "./Context/AuthContext";
-import ProductPage from "./Pages/Products/ProductListPage";
-import ProductDetailsPage from "./Pages/Products/ProductDetailsPage";
 import StoreFrontPage from "./Pages/StoreFrontPage";
 
 function App() {
@@ -19,7 +17,7 @@ function App() {
       _getUser: user,
     };
   });
-  
+
 
   return (
     <>
@@ -45,24 +43,6 @@ function App() {
             </AuthContext.Provider>
           }
         />
-        {/* <Route
-          path="/products"
-          exact
-          element={
-            <AuthContext.Provider value={authContext}>
-              <ProductPage />
-            </AuthContext.Provider>
-          }
-        />
-        <Route
-          path="/product-details"
-          exact
-          element={
-            <AuthContext.Provider value={authContext}>
-              <ProductDetailsPage />
-            </AuthContext.Provider>
-          }
-        /> */}
       </Routes>
     </>
   );

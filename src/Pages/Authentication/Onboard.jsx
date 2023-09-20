@@ -9,10 +9,10 @@ import LayoutPage from "../../Components/Auth/LayoutPage";
 import { API } from "../../string";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-// import { toast } from "react-toastify";
-// import 'react-toastify/dist/ReactToastify.css';
+import { Loader } from "semantic-ui-react";
 
 const OnboardPage = () => {
+  const [load, setLoad] = useState(Boolean);
   const title = "Register";
   const description = "Register Page";
 
@@ -28,6 +28,7 @@ const OnboardPage = () => {
   });
   const initialValues = { name: "", email: "", password: "", terms: false };
   const onSubmit = (values) => {
+    setLoad(true)
     axios
       .post(`${API}/user/onboard`, {
         full_name: values.name,
@@ -36,9 +37,11 @@ const OnboardPage = () => {
       })
       .then((res) => {
         navigate("/auth");
+        setLoad(false)
         toast.success(res.data.message);
       })
       .catch((error) => {
+        setLoad(false)
         toast.error(error.response.data.message);
       });
   };
@@ -97,9 +100,6 @@ const OnboardPage = () => {
     >
       <div className="sw-lg-50 px-5">
         <div className="sh-11">
-          {/* <NavLink to="/">
-            <div className="logo-default" />
-          </NavLink> */}
         </div>
         <div className="mb-5">
           <h2 className="cta-1 mb-0 text-primary">Welcome,</h2>
@@ -177,7 +177,13 @@ const OnboardPage = () => {
               </div>
             </div>
             <Button size="lg" type="submit" className="bg-primary">
-              Signup
+              {load ? (
+                <>
+                  <Loader active inline="centered" />
+                </>
+              ) : (
+                <>Signup</>
+              )}
             </Button>
           </form>
         </div>

@@ -9,35 +9,41 @@ import CsLineIcons from "../../cs-line-icons/CsLineIcons";
 import LayoutPage from "../../Components/Auth/LayoutPage";
 import { API } from "../../string";
 import axios from "axios";
+import { Loader } from "semantic-ui-react";
 import { toast } from "react-hot-toast";
 
 const LoginPage = () => {
+  const [load, setLoad] = useState(Boolean);
   const title = "Login";
   const description = "Login Page";
 
   const navigate = useNavigate();
 
   const validationSchema = Yup.object().shape({
-    email: Yup.string()
-      .email()
-      .required("Email is required"),
+    email: Yup.string().email().required("Email is required"),
     password: Yup.string()
       .min(6, "Must be at least 6 chars!")
       .required("Password is required"),
   });
   const initialValues = { email: "", password: "" };
   const onSubmit = (values) => {
-    axios.post(`${API}/auth`, {
+    setLoad(true)
+    axios
+      .post(`${API}/auth`, {
         email: values.email,
-        password: values.password
-    }).then((res)=>{
-        toast.success(res.data.message)
-        localStorage.setItem("clarktoken", res.data.data.token)
-        navigate("/dashboard")
-    }).catch((error)=>{
-        toast.error(error.response.data.message)
-    })
-  }
+        password: values.password,
+      })
+      .then((res) => {
+        setLoad(false)
+        toast.success(res.data.message);
+        localStorage.setItem("clarktoken", res.data.data.token);
+        navigate("/dashboard");
+      })
+      .catch((error) => {
+        setLoad(false)
+        toast.error(error.response.data.message);
+      });
+  };
 
   const formik = useFormik({ initialValues, validationSchema, onSubmit });
   const { handleSubmit, handleChange, values, touched, errors } = formik;
@@ -46,13 +52,13 @@ const LoginPage = () => {
     <div
       className="banner"
       style={{
-        backgroundColor:"#1ea8e7",
+        backgroundColor: "#1ea8e7",
         width: "100%",
         padding: 35,
         height: "100vh",
-        display:"flex",
-        justifyContent:"center",
-        alignItems:"center"
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
       <div
@@ -93,9 +99,6 @@ const LoginPage = () => {
     >
       <div className="sw-lg-50 px-5">
         <div className="sh-11">
-          {/* <NavLink to="/">
-            <div className="logo-default" />
-          </NavLink> */}
         </div>
         <div className="mb-5">
           <h2 className="cta-1 mb-0 text-primary">Welcome,</h2>
@@ -147,7 +150,13 @@ const LoginPage = () => {
               )}
             </div>
             <Button size="lg" type="submit" className="bg-primary">
-              Login
+              {load ? (
+                <>
+                  <Loader active inline="centered" />
+                </>
+              ) : (
+                <> Login</>
+              )}
             </Button>
           </form>
         </div>
