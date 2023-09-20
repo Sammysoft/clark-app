@@ -171,11 +171,15 @@ const AddNewProduct = ({ route, setRoute }) => {
                   title="Save"
                 >
                   <i data-acorn-icon="save"></i>
+                  <span>Save</span>
                 </button>
               </div>
               <div class="col col-md-auto d-flex align-items-end justify-content-end">
                 <div class="btn-group ms-1 w-100 w-md-auto">
                   <button
+                       onClick={() => {
+                        addProduct();
+                      }}
                     type="button"
                     class="btn btn-outline-primary btn-icon btn-icon-start w-100"
                   >
@@ -193,9 +197,6 @@ const AddNewProduct = ({ route, setRoute }) => {
                   <div class="dropdown-menu dropdown-menu-end">
                     <button class="dropdown-item" type="button">
                       Unpublish
-                    </button>
-                    <button class="dropdown-item" type="button">
-                      Draft
                     </button>
                     <button class="dropdown-item" type="button">
                       Delete
